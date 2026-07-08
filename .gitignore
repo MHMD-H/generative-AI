@@ -1,0 +1,4 @@
+.env
+.env.*
+ai_env
+ai_env.env
