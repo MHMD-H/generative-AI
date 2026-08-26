@@ -8,12 +8,14 @@ class DocumentLoader(ABC):
         pass
 
 class PDFLoader(DocumentLoader):
+    source_type = "pdf"
     
     def load(self, file_path):
         loader = PyPDFLoader(file_path)
         return loader.load()
 
 class WebLoader(DocumentLoader):
+    source_type = "web"
 
 
     def load(self, url):
@@ -22,6 +24,7 @@ class WebLoader(DocumentLoader):
 
 
 class NotionLoader(DocumentLoader):
+    source_type = "notion"
     
     def load(self, file_path):
         loader = NotionDirectoryLoader(file_path)
@@ -43,23 +46,16 @@ class ContextLoader:
 
 class LoaderFactory():
     def define_type (self,source):
+        normalized_source = source.lower()
 
-        if source.endswith(".pdf"):
+        if normalized_source.endswith(".pdf"):
             return PDFLoader()
-        elif source.startswith("http"):
+        elif normalized_source.startswith("http"):
             return WebLoader()
-        elif source.endswith(".notion"):
+        elif normalized_source.endswith(".notion"):
             return NotionLoader()
         else:
             raise ValueError("Unsupported source type. Please provide a valid PDF, URL, or Notion file path.")
 
-def main():
-    source = r"RAG_Search_Retrieval_Guide_AR.pdf"  # Replace with your PDF file path
-    loader_factory = LoaderFactory()
 
-    loader = loader_factory.define_type(source)
-    documents = loader.load(source)
-    print(f"Loaded {len(documents)} documents from {source}")
 
-if __name__ == "__main__":
-    main()
