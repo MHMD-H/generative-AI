@@ -1,6 +1,6 @@
 
 
-class semintic_search :
+class semantic_search :
     def __init__(self , vectorstore  = None) :
         self.vectorstore = vectorstore
 
@@ -24,9 +24,9 @@ class keyword_search :
         return self.bm25.invoke(query)
 
 
-class hybird_search :
+class hybrid_search :
     def __init__(self,method = None):
         self.method = method
 
-    def RRF(self,query,semintic_search_method,hybird_search_method) :
-        return self.method.rank_fusion(query=query,run_manager=[semintic_search_method,hybird_search_method])
+    def RRF(self,query,semantic_search_method,hybrid_search_method) :
+        return self.method.rank_fusion(query=query,run_manager=[semantic_search_method,hybrid_search_method])

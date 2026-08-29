@@ -3,10 +3,11 @@ import sys
 from embedding import ChromaVectorStore
 from chunks import ChunkerFactory
 from metadata import MetadataEnrichment
-from loders import LoaderFactory
-from prompt_loading import Response
-from token_limiting import tokenbudget
+from loaders import LoaderFactory
+from prompt_loading import (  OpenAIResponse , OpenAIResponseAdapter)
+from token_limiting import TokenBudget
 sys.stdout.reconfigure(encoding="utf-8")
+
 
 source = r"Docs\RAG_Search_Retrieval_Guide_AR.pdf"  # Replace with your PDF file path
 loader_factory = LoaderFactory()
@@ -27,21 +28,22 @@ for document in documents:
 
 query = input("How can i help you ?")
 vector_chroma = ChromaVectorStore()
-vectror_db=vector_chroma.vectorstore
-vectror_db.add_documents(chunks)
+vector_db=vector_chroma.vectorstore
+vector_db.add_documents(chunks)
 
 def semantic_search_(k,query,title = None)  :
     if title is None:
-        return vectror_db.similarity_search(k=k,query=query)
-    return vectror_db.similarity_search(k=k,query=query,filter={"title":title})
+        return vector_db.similarity_search(k=k,query=query)
+    return vector_db.similarity_search(k=k,query=query,filter={"title":title})
 
 relative_docs = semantic_search_(3,query)
 
-llm_response = Response()
-output = llm_response.get_response(query,relative_docs)
-token_calculation = llm_response.calculate_usage()
+client = OpenAIResponse()
+llm_response = OpenAIResponseAdapter(client)
+output = llm_response.invoke(query,relative_docs)
+token_calculation = client.calculate_usage()
 
-token_consuming = tokenbudget()
+token_consuming = TokenBudget()
 token_consuming.limiting(token_calculation["Total_tokens"])
 token_consuming.calculate_tokens(token_calculation["Input_tokens"], token_calculation["Output_tokens"])
 

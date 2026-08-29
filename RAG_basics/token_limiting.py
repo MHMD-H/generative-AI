@@ -1,6 +1,6 @@
 
 
-class tokenbudget :
+class TokenBudget :
     def __init__ (self,max_tokens_per_request = 4000):
         self.max_tokens_per_request  = max_tokens_per_request
         self.total_input_tokens = 0
@@ -10,9 +10,9 @@ class tokenbudget :
         if total_tokens > self.max_tokens_per_request:
             raise ValueError("The context is too long")
 
-    def calculate_tokens(self,input_tokens,output_tokns):
+    def calculate_tokens(self,input_tokens,output_tokens):
         self.total_input_tokens += input_tokens
-        self.total_output_tokens += output_tokns
+        self.total_output_tokens += output_tokens
         self.request_count +=1
     
     def get_status(self):

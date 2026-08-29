@@ -1,17 +1,29 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+from abc import ABC , abstractmethod
+
+
+
 load_dotenv()
+#target
+class Response(ABC) :
+    @abstractmethod
+    def invoke(self,query,source) :
+        pass
+
 
 def get_client():
     api_key = os.getenv("OPENAI_API_KEY") or os.getenv("OpenAI_API_key")
     return OpenAI(api_key=api_key)
-    
-class Response :
-    def __init__(self,model="gpt-5-mini",tempreture = .3) :
+
+
+#adaptee 
+class OpenAIResponse :
+    def __init__(self,model="gpt-5-mini",temperature = .3) :
         
         self.model=model
-        self.temperature=tempreture
+        self.temperature=temperature
         self.response = None
         
 
@@ -56,5 +68,12 @@ class Response :
                 "Total_tokens" : self.response.usage.total_tokens
     
             }
-    
 
+#adapter
+class OpenAIResponseAdapter(Response) :
+    def __init__(self,OpenAIResponseObject ) :
+        self.OpenAIResponseObject = OpenAIResponseObject
+
+    def invoke(self,query,source):
+        response = self.OpenAIResponseObject.get_response(query,source)
+        return response
