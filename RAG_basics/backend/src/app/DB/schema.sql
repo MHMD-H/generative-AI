@@ -4,18 +4,18 @@ CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     email TEXT UNIQUE,
-    password_hash TEXT NOT NULL,
+    password_hash TEXT,
     role TEXT NOT NULL CHECK (role IN ('admin', 'manager', 'teacher', 'staff')),
     is_active INTEGER NOT NULL DEFAULT 1,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS academic_years (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE,
-    starts_on DATETIME NOT NULL,
-    ends_on DATETIME NOT NULL,
+    starts_on TEXT NOT NULL,
+    ends_on TEXT NOT NULL,
     is_active INTEGER NOT NULL DEFAULT 0
 );
 
@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS terms (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     academic_year_id INTEGER NOT NULL,
     name TEXT NOT NULL,
-    starts_on DATETIME NOT NULL,
-    ends_on DATETIME NOT NULL,
+    starts_on TEXT NOT NULL,
+    ends_on TEXT NOT NULL,
     FOREIGN KEY (academic_year_id) REFERENCES academic_years (id) ON DELETE CASCADE,
     UNIQUE (academic_year_id, name)
 );
