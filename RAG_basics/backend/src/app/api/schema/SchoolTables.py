@@ -25,6 +25,14 @@ class user_response(UserBase, response_config):
     updated_at: datetime
 
 
+class user_update(BaseModel):
+    username: str | None = None
+    email: str | None = None
+    password_hash: str | None = None
+    role: str | None = None
+    is_active: int | None = None
+
+
 class TermBase(BaseModel):
     academic_year_id: int
     name: str
@@ -38,6 +46,13 @@ class term_request(TermBase):
 
 class term_response(TermBase, response_config):
     id: int
+
+
+class term_update(BaseModel):
+    academic_year_id: int | None = None
+    name: str | None = None
+    starts_on: date | None = None
+    ends_on: date | None = None
 
 
 class GradeLevelBase(BaseModel):
@@ -54,6 +69,12 @@ class gradelevel_response(GradeLevelBase, response_config):
     id: int
 
 
+class gradelevel_update(BaseModel):
+    name: str | None = None
+    stage: str | None = None
+    sort_order: int | None = None
+
+
 class ClassroomBase(BaseModel):
     grade_level_id: int
     name: str
@@ -67,6 +88,13 @@ class classroom_request(ClassroomBase):
 
 class classroom_response(ClassroomBase, response_config):
     id: int
+
+
+class classroom_update(BaseModel):
+    grade_level_id: int | None = None
+    name: str | None = None
+    capacity: int | None = None
+    academic_year_id: int | None = None
 
 
 class StudentBase(BaseModel):
@@ -85,6 +113,16 @@ class student_request(StudentBase):
 
 class student_response(StudentBase, response_config):
     id: int
+
+
+class student_update(BaseModel):
+    classroom_id: int | None = None
+    student_code: str | None = None
+    full_name: str | None = None
+    birth_date: date | None = None
+    gender: str | None = None
+    status: str | None = None
+    notes: str | None = None
 
 
 class GuardianBase(BaseModel):
@@ -115,6 +153,14 @@ class studentguardian_response(StudentGuardianBase, response_config):
     id: int
 
 
+class studentguardian_update(BaseModel):
+    student_id: int | None = None
+    guardian_id: int | None = None
+    relationship: str | None = None
+    is_primary: int | None = None
+    can_receive_messages: int | None = None
+
+
 class StaffBase(BaseModel):
     user_id: int | None = None
     employee_code: str
@@ -134,6 +180,17 @@ class staff_response(StaffBase, response_config):
     id: int
 
 
+class staff_update(BaseModel):
+    user_id: int | None = None
+    employee_code: str | None = None
+    full_name: str | None = None
+    job_title: str | None = None
+    department: str | None = None
+    phone: str | None = None
+    hire_date: date | None = None
+    is_active: int | None = None
+
+
 class TeacherBase(BaseModel):
     staff_id: int
     specialization: str | None = None
@@ -146,6 +203,12 @@ class teacher_request(TeacherBase):
 
 class teacher_response(TeacherBase, response_config):
     id: int
+
+
+class teacher_update(BaseModel):
+    staff_id: int | None = None
+    specialization: str | None = None
+    max_periods_per_week: int | None = None
 
 
 class SubjectBase(BaseModel):
@@ -162,6 +225,12 @@ class subject_response(SubjectBase, response_config):
     id: int
 
 
+class subject_update(BaseModel):
+    name: str | None = None
+    code: str | None = None
+    description: str | None = None
+
+
 class TeacherSubjectBase(BaseModel):
     teacher_id: int
     subject_id: int
@@ -173,6 +242,11 @@ class teachersubject_request(TeacherSubjectBase):
 
 class teachersubject_response(TeacherSubjectBase, response_config):
     id: int
+
+
+class teachersubject_update(BaseModel):
+    teacher_id: int | None = None
+    subject_id: int | None = None
 
 
 class ClassSubjectBase(BaseModel):
@@ -187,6 +261,12 @@ class classsubject_request(ClassSubjectBase):
 
 class classsubject_response(ClassSubjectBase, response_config):
     id: int
+
+
+class classsubject_update(BaseModel):
+    classroom_id: int | None = None
+    subject_id: int | None = None
+    weekly_periods: int | None = None
 
 
 class TeacherClassSubjectBase(BaseModel):
@@ -204,6 +284,13 @@ class teacherclasssubject_response(TeacherClassSubjectBase, response_config):
     id: int
 
 
+class teacherclasssubject_update(BaseModel):
+    teacher_id: int | None = None
+    classroom_id: int | None = None
+    subject_id: int | None = None
+    academic_year_id: int | None = None
+
+
 class PeriodBase(BaseModel):
     name: str
     starts_at: time
@@ -217,6 +304,13 @@ class period_request(PeriodBase):
 
 class period_response(PeriodBase, response_config):
     id: int
+
+
+class period_update(BaseModel):
+    name: str | None = None
+    starts_at: time | None = None
+    ends_at: time | None = None
+    sort_order: int | None = None
 
 
 class TimetableEntryBase(BaseModel):
@@ -237,6 +331,16 @@ class timetableentry_response(TimetableEntryBase, response_config):
     id: int
 
 
+class timetableentry_update(BaseModel):
+    term_id: int | None = None
+    classroom_id: int | None = None
+    teacher_id: int | None = None
+    subject_id: int | None = None
+    period_id: int | None = None
+    weekday: int | None = None
+    room: str | None = None
+
+
 class SubstitutionBase(BaseModel):
     timetable_entry_id: int
     absent_teacher_id: int
@@ -253,6 +357,16 @@ class substitution_request(SubstitutionBase):
 
 class substitution_response(SubstitutionBase, response_config):
     id: int
+
+
+class substitution_update(BaseModel):
+    timetable_entry_id: int | None = None
+    absent_teacher_id: int | None = None
+    substitute_teacher_id: int | None = None
+    substitute_staff_id: int | None = None
+    substitution_date: date | None = None
+    reason: str | None = None
+    status: str | None = None
 
 
 class WaitingSessionBase(BaseModel):
@@ -272,6 +386,15 @@ class waitingsession_response(WaitingSessionBase, response_config):
     id: int
 
 
+class waitingsession_update(BaseModel):
+    substitution_id: int | None = None
+    classroom_id: int | None = None
+    supervisor_staff_id: int | None = None
+    period_id: int | None = None
+    session_date: date | None = None
+    notes: str | None = None
+
+
 class StaffAttendanceBase(BaseModel):
     staff_id: int
     attendance_date: date
@@ -289,6 +412,15 @@ class staffattendance_response(StaffAttendanceBase, response_config):
     id: int
 
 
+class staffattendance_update(BaseModel):
+    staff_id: int | None = None
+    attendance_date: date | None = None
+    check_in_at: time | None = None
+    check_out_at: time | None = None
+    status: str | None = None
+    notes: str | None = None
+
+
 class StudentAttendanceBase(BaseModel):
     student_id: int
     classroom_id: int
@@ -303,6 +435,14 @@ class studentattendance_request(StudentAttendanceBase):
 
 class studentattendance_response(StudentAttendanceBase, response_config):
     id: int
+
+
+class studentattendance_update(BaseModel):
+    student_id: int | None = None
+    classroom_id: int | None = None
+    attendance_date: date | None = None
+    status: str | None = None
+    notes: str | None = None
 
 
 class CommunicationBase(BaseModel):
@@ -385,6 +525,16 @@ class documentchunk_response(DocumentChunkBase, response_config):
     created_at: datetime
 
 
+class documentchunk_update(BaseModel):
+    document_id: int | None = None
+    chunk_index: int | None = None
+    content: str | None = None
+    token_count: int | None = None
+    embedding_id: str | None = None
+    page_number: int | None = None
+    metadata_json: str | None = None
+
+
 class DocumentTagBase(BaseModel):
     name: str
 
@@ -395,6 +545,10 @@ class documenttag_request(DocumentTagBase):
 
 class documenttag_response(DocumentTagBase, response_config):
     id: int
+
+
+class documenttag_update(BaseModel):
+    name: str | None = None
 
 
 class DocumentTagLinkBase(BaseModel):
@@ -408,6 +562,11 @@ class documenttaglink_request(DocumentTagLinkBase):
 
 class documenttaglink_response(DocumentTagLinkBase, response_config):
     id: int
+
+
+class documenttaglink_update(BaseModel):
+    document_id: int | None = None
+    tag_id: int | None = None
 
 
 class ChatSessionBase(BaseModel):
@@ -446,3 +605,10 @@ class retrievallog_request(RetrievalLogBase):
 class retrievallog_response(RetrievalLogBase, response_config):
     id: int
     created_at: datetime
+
+
+class retrievallog_update(BaseModel):
+    chat_message_id: int | None = None
+    document_chunk_id: int | None = None
+    rank: int | None = None
+    score: float | None = None

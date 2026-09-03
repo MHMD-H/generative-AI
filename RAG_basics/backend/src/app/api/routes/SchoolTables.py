@@ -31,6 +31,31 @@ def create_with_unique_check(model, posted_data, unique_fields: tuple[str, ...],
     return new_item
 
 
+def update_item(model, item_id: int, updated_data, db: Session):
+    item = get_by_id(model, item_id, db)
+    for field, value in updated_data.model_dump().items():
+        setattr(item, field, value)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+def patch_item(model, item_id: int, modified_data, db: Session):
+    item = get_by_id(model, item_id, db)
+    for field, value in modified_data.model_dump(exclude_unset=True).items():
+        setattr(item, field, value)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+def delete_item(model, item_id: int, db: Session):
+    item = get_by_id(model, item_id, db)
+    db.delete(item)
+    db.commit()
+    return {"detail": f"{model.__name__} deleted successfully"}
+
+
 @app.get("/users/{item_id}")
 def get_user(item_id: int, db: Annotated[Session, Depends(database.get_db)]) -> schema.user_response:
     return get_by_id(models.User, item_id, db)
@@ -284,3 +309,333 @@ def get_retrieval_log(item_id: int, db: Annotated[Session, Depends(database.get_
 @app.post("/retrieval_logs/")
 def create_retrieval_log(posted_data: schema.retrievallog_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.retrievallog_response:
     return create_with_unique_check(models.RetrievalLog, posted_data, ("chat_message_id", "document_chunk_id"), db)
+
+
+@app.put("/users/{item_id}")
+def update_user(item_id: int, updated_data: schema.user_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.user_response:
+    return update_item(models.User, item_id, updated_data, db)
+
+
+@app.patch("/users/{item_id}")
+def patch_user(item_id: int, modified_data: schema.user_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.user_response:
+    return patch_item(models.User, item_id, modified_data, db)
+
+
+@app.delete("/users/{item_id}")
+def delete_user(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.User, item_id, db)
+
+
+@app.put("/terms/{item_id}")
+def update_term(item_id: int, updated_data: schema.term_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.term_response:
+    return update_item(models.Term, item_id, updated_data, db)
+
+
+@app.patch("/terms/{item_id}")
+def patch_term(item_id: int, modified_data: schema.term_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.term_response:
+    return patch_item(models.Term, item_id, modified_data, db)
+
+
+@app.delete("/terms/{item_id}")
+def delete_term(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.Term, item_id, db)
+
+
+@app.put("/grade_levels/{item_id}")
+def update_grade_level(item_id: int, updated_data: schema.gradelevel_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.gradelevel_response:
+    return update_item(models.GradeLevel, item_id, updated_data, db)
+
+
+@app.patch("/grade_levels/{item_id}")
+def patch_grade_level(item_id: int, modified_data: schema.gradelevel_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.gradelevel_response:
+    return patch_item(models.GradeLevel, item_id, modified_data, db)
+
+
+@app.delete("/grade_levels/{item_id}")
+def delete_grade_level(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.GradeLevel, item_id, db)
+
+
+@app.put("/classrooms/{item_id}")
+def update_classroom(item_id: int, updated_data: schema.classroom_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.classroom_response:
+    return update_item(models.Classroom, item_id, updated_data, db)
+
+
+@app.patch("/classrooms/{item_id}")
+def patch_classroom(item_id: int, modified_data: schema.classroom_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.classroom_response:
+    return patch_item(models.Classroom, item_id, modified_data, db)
+
+
+@app.delete("/classrooms/{item_id}")
+def delete_classroom(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.Classroom, item_id, db)
+
+
+@app.put("/students/{item_id}")
+def update_student(item_id: int, updated_data: schema.student_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.student_response:
+    return update_item(models.Student, item_id, updated_data, db)
+
+
+@app.patch("/students/{item_id}")
+def patch_student(item_id: int, modified_data: schema.student_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.student_response:
+    return patch_item(models.Student, item_id, modified_data, db)
+
+
+@app.delete("/students/{item_id}")
+def delete_student(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.Student, item_id, db)
+
+
+@app.put("/student_guardians/{item_id}")
+def update_student_guardian(item_id: int, updated_data: schema.studentguardian_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.studentguardian_response:
+    return update_item(models.StudentGuardian, item_id, updated_data, db)
+
+
+@app.patch("/student_guardians/{item_id}")
+def patch_student_guardian(item_id: int, modified_data: schema.studentguardian_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.studentguardian_response:
+    return patch_item(models.StudentGuardian, item_id, modified_data, db)
+
+
+@app.delete("/student_guardians/{item_id}")
+def delete_student_guardian(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.StudentGuardian, item_id, db)
+
+
+@app.put("/staff/{item_id}")
+def update_staff(item_id: int, updated_data: schema.staff_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.staff_response:
+    return update_item(models.Staff, item_id, updated_data, db)
+
+
+@app.patch("/staff/{item_id}")
+def patch_staff(item_id: int, modified_data: schema.staff_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.staff_response:
+    return patch_item(models.Staff, item_id, modified_data, db)
+
+
+@app.delete("/staff/{item_id}")
+def delete_staff(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.Staff, item_id, db)
+
+
+@app.put("/teachers/{item_id}")
+def update_teacher(item_id: int, updated_data: schema.teacher_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.teacher_response:
+    return update_item(models.Teacher, item_id, updated_data, db)
+
+
+@app.patch("/teachers/{item_id}")
+def patch_teacher(item_id: int, modified_data: schema.teacher_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.teacher_response:
+    return patch_item(models.Teacher, item_id, modified_data, db)
+
+
+@app.delete("/teachers/{item_id}")
+def delete_teacher(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.Teacher, item_id, db)
+
+
+@app.put("/subjects/{item_id}")
+def update_subject(item_id: int, updated_data: schema.subject_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.subject_response:
+    return update_item(models.Subject, item_id, updated_data, db)
+
+
+@app.patch("/subjects/{item_id}")
+def patch_subject(item_id: int, modified_data: schema.subject_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.subject_response:
+    return patch_item(models.Subject, item_id, modified_data, db)
+
+
+@app.delete("/subjects/{item_id}")
+def delete_subject(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.Subject, item_id, db)
+
+
+@app.put("/teacher_subjects/{item_id}")
+def update_teacher_subject(item_id: int, updated_data: schema.teachersubject_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.teachersubject_response:
+    return update_item(models.TeacherSubject, item_id, updated_data, db)
+
+
+@app.patch("/teacher_subjects/{item_id}")
+def patch_teacher_subject(item_id: int, modified_data: schema.teachersubject_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.teachersubject_response:
+    return patch_item(models.TeacherSubject, item_id, modified_data, db)
+
+
+@app.delete("/teacher_subjects/{item_id}")
+def delete_teacher_subject(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.TeacherSubject, item_id, db)
+
+
+@app.put("/class_subjects/{item_id}")
+def update_class_subject(item_id: int, updated_data: schema.classsubject_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.classsubject_response:
+    return update_item(models.ClassSubject, item_id, updated_data, db)
+
+
+@app.patch("/class_subjects/{item_id}")
+def patch_class_subject(item_id: int, modified_data: schema.classsubject_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.classsubject_response:
+    return patch_item(models.ClassSubject, item_id, modified_data, db)
+
+
+@app.delete("/class_subjects/{item_id}")
+def delete_class_subject(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.ClassSubject, item_id, db)
+
+
+@app.put("/teacher_class_subjects/{item_id}")
+def update_teacher_class_subject(item_id: int, updated_data: schema.teacherclasssubject_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.teacherclasssubject_response:
+    return update_item(models.TeacherClassSubject, item_id, updated_data, db)
+
+
+@app.patch("/teacher_class_subjects/{item_id}")
+def patch_teacher_class_subject(item_id: int, modified_data: schema.teacherclasssubject_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.teacherclasssubject_response:
+    return patch_item(models.TeacherClassSubject, item_id, modified_data, db)
+
+
+@app.delete("/teacher_class_subjects/{item_id}")
+def delete_teacher_class_subject(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.TeacherClassSubject, item_id, db)
+
+
+@app.put("/periods/{item_id}")
+def update_period(item_id: int, updated_data: schema.period_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.period_response:
+    return update_item(models.Period, item_id, updated_data, db)
+
+
+@app.patch("/periods/{item_id}")
+def patch_period(item_id: int, modified_data: schema.period_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.period_response:
+    return patch_item(models.Period, item_id, modified_data, db)
+
+
+@app.delete("/periods/{item_id}")
+def delete_period(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.Period, item_id, db)
+
+
+@app.put("/timetable_entries/{item_id}")
+def update_timetable_entry(item_id: int, updated_data: schema.timetableentry_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.timetableentry_response:
+    return update_item(models.TimetableEntry, item_id, updated_data, db)
+
+
+@app.patch("/timetable_entries/{item_id}")
+def patch_timetable_entry(item_id: int, modified_data: schema.timetableentry_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.timetableentry_response:
+    return patch_item(models.TimetableEntry, item_id, modified_data, db)
+
+
+@app.delete("/timetable_entries/{item_id}")
+def delete_timetable_entry(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.TimetableEntry, item_id, db)
+
+
+@app.put("/substitutions/{item_id}")
+def update_substitution(item_id: int, updated_data: schema.substitution_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.substitution_response:
+    return update_item(models.Substitution, item_id, updated_data, db)
+
+
+@app.patch("/substitutions/{item_id}")
+def patch_substitution(item_id: int, modified_data: schema.substitution_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.substitution_response:
+    return patch_item(models.Substitution, item_id, modified_data, db)
+
+
+@app.delete("/substitutions/{item_id}")
+def delete_substitution(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.Substitution, item_id, db)
+
+
+@app.put("/waiting_sessions/{item_id}")
+def update_waiting_session(item_id: int, updated_data: schema.waitingsession_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.waitingsession_response:
+    return update_item(models.WaitingSession, item_id, updated_data, db)
+
+
+@app.patch("/waiting_sessions/{item_id}")
+def patch_waiting_session(item_id: int, modified_data: schema.waitingsession_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.waitingsession_response:
+    return patch_item(models.WaitingSession, item_id, modified_data, db)
+
+
+@app.delete("/waiting_sessions/{item_id}")
+def delete_waiting_session(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.WaitingSession, item_id, db)
+
+
+@app.put("/staff_attendance/{item_id}")
+def update_staff_attendance(item_id: int, updated_data: schema.staffattendance_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.staffattendance_response:
+    return update_item(models.StaffAttendance, item_id, updated_data, db)
+
+
+@app.patch("/staff_attendance/{item_id}")
+def patch_staff_attendance(item_id: int, modified_data: schema.staffattendance_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.staffattendance_response:
+    return patch_item(models.StaffAttendance, item_id, modified_data, db)
+
+
+@app.delete("/staff_attendance/{item_id}")
+def delete_staff_attendance(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.StaffAttendance, item_id, db)
+
+
+@app.put("/student_attendance/{item_id}")
+def update_student_attendance(item_id: int, updated_data: schema.studentattendance_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.studentattendance_response:
+    return update_item(models.StudentAttendance, item_id, updated_data, db)
+
+
+@app.patch("/student_attendance/{item_id}")
+def patch_student_attendance(item_id: int, modified_data: schema.studentattendance_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.studentattendance_response:
+    return patch_item(models.StudentAttendance, item_id, modified_data, db)
+
+
+@app.delete("/student_attendance/{item_id}")
+def delete_student_attendance(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.StudentAttendance, item_id, db)
+
+
+@app.put("/document_chunks/{item_id}")
+def update_document_chunk(item_id: int, updated_data: schema.documentchunk_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.documentchunk_response:
+    return update_item(models.DocumentChunk, item_id, updated_data, db)
+
+
+@app.patch("/document_chunks/{item_id}")
+def patch_document_chunk(item_id: int, modified_data: schema.documentchunk_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.documentchunk_response:
+    return patch_item(models.DocumentChunk, item_id, modified_data, db)
+
+
+@app.delete("/document_chunks/{item_id}")
+def delete_document_chunk(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.DocumentChunk, item_id, db)
+
+
+@app.put("/document_tags/{item_id}")
+def update_document_tag(item_id: int, updated_data: schema.documenttag_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.documenttag_response:
+    return update_item(models.DocumentTag, item_id, updated_data, db)
+
+
+@app.patch("/document_tags/{item_id}")
+def patch_document_tag(item_id: int, modified_data: schema.documenttag_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.documenttag_response:
+    return patch_item(models.DocumentTag, item_id, modified_data, db)
+
+
+@app.delete("/document_tags/{item_id}")
+def delete_document_tag(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.DocumentTag, item_id, db)
+
+
+@app.put("/document_tag_links/{item_id}")
+def update_document_tag_link(item_id: int, updated_data: schema.documenttaglink_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.documenttaglink_response:
+    return update_item(models.DocumentTagLink, item_id, updated_data, db)
+
+
+@app.patch("/document_tag_links/{item_id}")
+def patch_document_tag_link(item_id: int, modified_data: schema.documenttaglink_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.documenttaglink_response:
+    return patch_item(models.DocumentTagLink, item_id, modified_data, db)
+
+
+@app.delete("/document_tag_links/{item_id}")
+def delete_document_tag_link(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.DocumentTagLink, item_id, db)
+
+
+@app.put("/retrieval_logs/{item_id}")
+def update_retrieval_log(item_id: int, updated_data: schema.retrievallog_request, db: Annotated[Session, Depends(database.get_db)]) -> schema.retrievallog_response:
+    return update_item(models.RetrievalLog, item_id, updated_data, db)
+
+
+@app.patch("/retrieval_logs/{item_id}")
+def patch_retrieval_log(item_id: int, modified_data: schema.retrievallog_update, db: Annotated[Session, Depends(database.get_db)]) -> schema.retrievallog_response:
+    return patch_item(models.RetrievalLog, item_id, modified_data, db)
+
+
+@app.delete("/retrieval_logs/{item_id}")
+def delete_retrieval_log(item_id: int, db: Annotated[Session, Depends(database.get_db)]):
+    return delete_item(models.RetrievalLog, item_id, db)
