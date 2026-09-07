@@ -1,19 +1,19 @@
 from os import getenv
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+from sqlalchemy.ext.asyncio import ( AsyncSession, create_async_engine , async_sessionmaker
+)
+from sqlalchemy.orm import DeclarativeBase
 
-
-engine = create_engine(
-    getenv("DATABASE_URL", "sqlite:///./school_rag.db"),
+engine = create_async_engine(
+    getenv("DATABASE_URL", "sqlite+aiosqlite:///./school_rag.db"),
     connect_args={"check_same_thread": False},
 )
 
-sessionlocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+async_sessionlocal = async_sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 
-def get_db():
-    with sessionlocal() as db:
+async def get_db():
+    async with async_sessionlocal() as db:
         yield db
 
 
