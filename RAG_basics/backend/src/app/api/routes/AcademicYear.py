@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from typing import Annotated
-from DB import(models , database )
+from backend.src.app.db import(models , database )
 from api.schema.AcademicYear import academicyear_request, academicyear_response , AcademicYearUpdate
 from sqlalchemy.ext.asyncio import AsyncSession
 app = APIRouter()
