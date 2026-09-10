@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException , Query
+from sqlalchemy import select , func 
 from typing import Annotated
 from backend.src.app.db import(models , database )
-from api.schema.AcademicYear import academicyear_request, academicyear_response , AcademicYearUpdate
+from api.schema.AcademicYear import academicyear_request, academicyear_response , AcademicYearUpdate , PaginatedResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 app = APIRouter()
 
@@ -66,3 +66,24 @@ async def delete_academic_year(academic_year_id:int , db : Annotated[AsyncSessio
         await db.commit()
         return {"detail": "Academic Year deleted successfully"}
     raise HTTPException(status_code=404, detail="Academic Year not found")
+
+
+@app.get("/academic_years/")
+async def list_academic_years( 
+db : Annotated[AsyncSession, Depends(database.get_db)],
+limit: Annotated[int, Query(ge=1,le=100)] = 10 , 
+skip : Annotated[int , Query(ge=0) ] = 0  ) -> PaginatedResponse[academicyear_response] :
+    rows_count =await db.execute( select(func.count(models.AcademicYear.id)).select_from(models.AcademicYear))
+    total = rows_count.scalar() or 0 
+    stmt = await db.execute(select(models.AcademicYear).order_by(models.AcademicYear.id.desc()).limit(limit).offset(skip))
+    AcademicYears = stmt.scalars().all()
+    has_more = (skip + len(AcademicYears) < total) 
+
+    return PaginatedResponse(
+        items = [academicyear_response.model_validate(AcademicYear) for AcademicYear in AcademicYears ],
+        limit = limit  ,
+        skip = skip ,
+        has_more = has_more ,
+        total = total
+    )
+

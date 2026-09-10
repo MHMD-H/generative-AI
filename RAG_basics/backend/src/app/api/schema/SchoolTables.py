@@ -1,6 +1,18 @@
 from datetime import date, datetime, time
+from typing import Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+T = TypeVar("T")
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: list[T] = Field(description="List of items for the current page")
+    total: int = Field(description="Total number of items across all pages")
+    limit: int = Field(description="Number of items per page")
+    skip: int = Field(description="Offset for pagination")
+    has_more: bool = Field(description="Indicates if there are more items to fetch")
 
 
 class response_config(BaseModel):

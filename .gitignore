@@ -2,3 +2,8 @@
 .env.*
 ai_env
 ai_env.env
+env
+school_rag.db
+*.db
+__pycache__/
+*.py[cod]

@@ -1,7 +1,7 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.src.app.db import database, models
@@ -642,3 +642,641 @@ async def patch_retrieval_log(item_id: int, modified_data: schema.retrievallog_u
 async def delete_retrieval_log(item_id: int, db: Annotated[AsyncSession, Depends(database.get_db)]):
     return await delete_item(models.RetrievalLog, item_id, db)
 
+
+@app.get("/users/")
+async def list_users(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.user_response]:
+    rows_count = await db.execute(select(func.count(models.User.id)).select_from(models.User))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.User).order_by(models.User.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.user_response](
+        items=[schema.user_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/terms/")
+async def list_terms(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.term_response]:
+    rows_count = await db.execute(select(func.count(models.Term.id)).select_from(models.Term))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Term).order_by(models.Term.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.term_response](
+        items=[schema.term_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/grade_levels/")
+async def list_grade_levels(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.gradelevel_response]:
+    rows_count = await db.execute(select(func.count(models.GradeLevel.id)).select_from(models.GradeLevel))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.GradeLevel).order_by(models.GradeLevel.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.gradelevel_response](
+        items=[schema.gradelevel_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/classrooms/")
+async def list_classrooms(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.classroom_response]:
+    rows_count = await db.execute(select(func.count(models.Classroom.id)).select_from(models.Classroom))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Classroom).order_by(models.Classroom.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.classroom_response](
+        items=[schema.classroom_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/students/")
+async def list_students(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.student_response]:
+    rows_count = await db.execute(select(func.count(models.Student.id)).select_from(models.Student))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Student).order_by(models.Student.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.student_response](
+        items=[schema.student_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/guardians/")
+async def list_guardians(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.guardian_response]:
+    rows_count = await db.execute(select(func.count(models.Guardian.id)).select_from(models.Guardian))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Guardian).order_by(models.Guardian.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.guardian_response](
+        items=[schema.guardian_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/student_guardians/")
+async def list_student_guardians(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.studentguardian_response]:
+    rows_count = await db.execute(select(func.count(models.StudentGuardian.id)).select_from(models.StudentGuardian))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.StudentGuardian).order_by(models.StudentGuardian.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.studentguardian_response](
+        items=[schema.studentguardian_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/staff/")
+async def list_staff_members(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.staff_response]:
+    rows_count = await db.execute(select(func.count(models.Staff.id)).select_from(models.Staff))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Staff).order_by(models.Staff.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.staff_response](
+        items=[schema.staff_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/teachers/")
+async def list_teachers(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.teacher_response]:
+    rows_count = await db.execute(select(func.count(models.Teacher.id)).select_from(models.Teacher))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Teacher).order_by(models.Teacher.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.teacher_response](
+        items=[schema.teacher_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/subjects/")
+async def list_subjects(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.subject_response]:
+    rows_count = await db.execute(select(func.count(models.Subject.id)).select_from(models.Subject))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Subject).order_by(models.Subject.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.subject_response](
+        items=[schema.subject_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/teacher_subjects/")
+async def list_teacher_subjects(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.teachersubject_response]:
+    rows_count = await db.execute(select(func.count(models.TeacherSubject.id)).select_from(models.TeacherSubject))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.TeacherSubject).order_by(models.TeacherSubject.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.teachersubject_response](
+        items=[schema.teachersubject_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/class_subjects/")
+async def list_class_subjects(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.classsubject_response]:
+    rows_count = await db.execute(select(func.count(models.ClassSubject.id)).select_from(models.ClassSubject))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.ClassSubject).order_by(models.ClassSubject.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.classsubject_response](
+        items=[schema.classsubject_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/teacher_class_subjects/")
+async def list_teacher_class_subjects(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.teacherclasssubject_response]:
+    rows_count = await db.execute(select(func.count(models.TeacherClassSubject.id)).select_from(models.TeacherClassSubject))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.TeacherClassSubject).order_by(models.TeacherClassSubject.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.teacherclasssubject_response](
+        items=[schema.teacherclasssubject_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/periods/")
+async def list_periods(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.period_response]:
+    rows_count = await db.execute(select(func.count(models.Period.id)).select_from(models.Period))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Period).order_by(models.Period.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.period_response](
+        items=[schema.period_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/timetable_entries/")
+async def list_timetable_entries(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.timetableentry_response]:
+    rows_count = await db.execute(select(func.count(models.TimetableEntry.id)).select_from(models.TimetableEntry))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.TimetableEntry).order_by(models.TimetableEntry.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.timetableentry_response](
+        items=[schema.timetableentry_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/substitutions/")
+async def list_substitutions(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.substitution_response]:
+    rows_count = await db.execute(select(func.count(models.Substitution.id)).select_from(models.Substitution))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Substitution).order_by(models.Substitution.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.substitution_response](
+        items=[schema.substitution_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/waiting_sessions/")
+async def list_waiting_sessions(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.waitingsession_response]:
+    rows_count = await db.execute(select(func.count(models.WaitingSession.id)).select_from(models.WaitingSession))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.WaitingSession).order_by(models.WaitingSession.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.waitingsession_response](
+        items=[schema.waitingsession_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/staff_attendance/")
+async def list_staff_attendance_records(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.staffattendance_response]:
+    rows_count = await db.execute(select(func.count(models.StaffAttendance.id)).select_from(models.StaffAttendance))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.StaffAttendance).order_by(models.StaffAttendance.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.staffattendance_response](
+        items=[schema.staffattendance_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/student_attendance/")
+async def list_student_attendance_records(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.studentattendance_response]:
+    rows_count = await db.execute(select(func.count(models.StudentAttendance.id)).select_from(models.StudentAttendance))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.StudentAttendance).order_by(models.StudentAttendance.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.studentattendance_response](
+        items=[schema.studentattendance_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/communications/")
+async def list_communications(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.communication_response]:
+    rows_count = await db.execute(select(func.count(models.Communication.id)).select_from(models.Communication))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Communication).order_by(models.Communication.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.communication_response](
+        items=[schema.communication_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/announcements/")
+async def list_announcements(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.announcement_response]:
+    rows_count = await db.execute(select(func.count(models.Announcement.id)).select_from(models.Announcement))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Announcement).order_by(models.Announcement.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.announcement_response](
+        items=[schema.announcement_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/reports/")
+async def list_reports(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.report_response]:
+    rows_count = await db.execute(select(func.count(models.Report.id)).select_from(models.Report))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Report).order_by(models.Report.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.report_response](
+        items=[schema.report_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/documents/")
+async def list_documents(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.document_response]:
+    rows_count = await db.execute(select(func.count(models.Document.id)).select_from(models.Document))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.Document).order_by(models.Document.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.document_response](
+        items=[schema.document_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/document_chunks/")
+async def list_document_chunks(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.documentchunk_response]:
+    rows_count = await db.execute(select(func.count(models.DocumentChunk.id)).select_from(models.DocumentChunk))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.DocumentChunk).order_by(models.DocumentChunk.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.documentchunk_response](
+        items=[schema.documentchunk_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/document_tags/")
+async def list_document_tags(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.documenttag_response]:
+    rows_count = await db.execute(select(func.count(models.DocumentTag.id)).select_from(models.DocumentTag))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.DocumentTag).order_by(models.DocumentTag.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.documenttag_response](
+        items=[schema.documenttag_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/document_tag_links/")
+async def list_document_tag_links(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.documenttaglink_response]:
+    rows_count = await db.execute(select(func.count(models.DocumentTagLink.id)).select_from(models.DocumentTagLink))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.DocumentTagLink).order_by(models.DocumentTagLink.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.documenttaglink_response](
+        items=[schema.documenttaglink_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/chat_sessions/")
+async def list_chat_sessions(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.chatsession_response]:
+    rows_count = await db.execute(select(func.count(models.ChatSession.id)).select_from(models.ChatSession))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.ChatSession).order_by(models.ChatSession.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.chatsession_response](
+        items=[schema.chatsession_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/chat_messages/")
+async def list_chat_messages(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.chatmessage_response]:
+    rows_count = await db.execute(select(func.count(models.ChatMessage.id)).select_from(models.ChatMessage))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.ChatMessage).order_by(models.ChatMessage.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.chatmessage_response](
+        items=[schema.chatmessage_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
+
+@app.get("/retrieval_logs/")
+async def list_retrieval_logs(
+    db: Annotated[AsyncSession, Depends(database.get_db)],
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+    skip: Annotated[int, Query(ge=0)] = 0,
+) -> schema.PaginatedResponse[schema.retrievallog_response]:
+    rows_count = await db.execute(select(func.count(models.RetrievalLog.id)).select_from(models.RetrievalLog))
+    total = rows_count.scalar() or 0
+    stmt = await db.execute(
+        select(models.RetrievalLog).order_by(models.RetrievalLog.id.desc()).limit(limit).offset(skip)
+    )
+    items = stmt.scalars().all()
+    has_more = skip + len(items) < total
+
+    return schema.PaginatedResponse[schema.retrievallog_response](
+        items=[schema.retrievallog_response.model_validate(item) for item in items],
+        limit=limit,
+        skip=skip,
+        has_more=has_more,
+        total=total,
+    )
